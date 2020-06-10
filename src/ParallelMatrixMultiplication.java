@@ -4,13 +4,14 @@ import java.util.Random;
 
 public class ParallelMatrixMultiplication {
 
+    // The maximum value a matrix index can have
     private static final int MATRIX_MAX_VALUE = 10;
 
     public static void run(String[] args) {
         int[] userInput = validateUserInput(args);
-        int m = userInput[0];
-        int p = userInput[1];
-        int n = userInput[2];
+        int n = userInput[0];
+        int m = userInput[1];
+        int p = userInput[2];
 
         // Generate an NxM matrix
         int[][] matrixNM = generateMatrix(n, m);
@@ -18,6 +19,7 @@ public class ParallelMatrixMultiplication {
         // Generate an MxP matrix
         int[][] matrixMP = generateMatrix(m, p);
 
+        // Print the randomly generated matrices
         printMatrix(matrixNM);
         printMatrix(matrixMP);
 
@@ -32,9 +34,14 @@ public class ParallelMatrixMultiplication {
         }
     }
 
+    /**
+     * Receives and validates the user's input.
+     * @param args command line arguments
+     * @return array of arguments converted to integers
+     */
     private static int[] validateUserInput(String[] args) {
         if (args.length != 3) {
-            System.out.println("Illegal arguments length");
+            System.out.println("Illegal arguments length, expected to receive: n, m, p");
             System.exit(1);
         }
         int[] userInput = new int[3];
@@ -52,6 +59,12 @@ public class ParallelMatrixMultiplication {
         return userInput;
     }
 
+    /**
+     * Generates a random matrix according to the given input.
+     * @param rows number of rows
+     * @param columns number of columns
+     * @return random matrix
+     */
     private static int[][] generateMatrix(int rows, int columns) {
         Random random = new Random();
         int[][] matrix = new int[rows][columns];
@@ -65,6 +78,10 @@ public class ParallelMatrixMultiplication {
         return matrix;
     }
 
+    /**
+     * Prints the given matrix.
+     * @param matrix matrix to print
+     */
     private static void printMatrix(int[][] matrix) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
@@ -75,6 +92,15 @@ public class ParallelMatrixMultiplication {
         System.out.println();
     }
 
+    /**
+     * Generates a list of matrix multiplication threads threads.
+     * @param n number of rows for threads
+     * @param p number of columns for threads
+     * @param firstMatrix first matrix of the multiplication
+     * @param secondMatrix second matrix of the multiplication
+     * @param printMonitor the printing monitor
+     * @return list of threads
+     */
     private static List<Thread> generateThreads(int n, int p,
                                                 int[][] firstMatrix, int[][] secondMatrix,
                                                 PrintMonitor printMonitor) {
@@ -92,11 +118,17 @@ public class ParallelMatrixMultiplication {
         return threads;
     }
 
+    /**
+     * Executes the threads in the given list.
+     * @param threads threads to execute
+     * @throws InterruptedException thread interrupt exception
+     */
     private static void executeThreads(List<Thread> threads) throws InterruptedException {
         for (Thread thread : threads) {
             thread.start();
         }
 
+        // Wait for threads to finish
         for (Thread thread : threads) {
             thread.join();
         }
